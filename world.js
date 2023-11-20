@@ -1,8 +1,17 @@
 document.addEventListener("DOMContentLoaded", function () {
     const lookupButton = document.getElementById("lookup");
+    const lookupCitiesButton = document.getElementById("lookupCities");
     const resultContainer = document.getElementById("result");
 
     lookupButton.addEventListener("click", function () {
+        fetchData("countries");
+    });
+
+    lookupCitiesButton.addEventListener("click", function () {
+        fetchData("cities");
+    });
+
+    function fetchData(lookupType) {
         const countryInput = document.getElementById("country");
         const countryName = countryInput.value.trim();
 
@@ -10,7 +19,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const xhr = new XMLHttpRequest();
 
         // Configure it to make a GET request to world.php with the country parameter
-        xhr.open("GET", `world.php?country=${encodeURIComponent(countryName)}`, true);
+        xhr.open("GET", `world.php?country=${encodeURIComponent(countryName)}&lookup=${lookupType}`, true);
 
         // Set up a callback function to handle the response
         xhr.onload = function () {
@@ -30,5 +39,5 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Send the request
         xhr.send();
-    });
+    }
 });
