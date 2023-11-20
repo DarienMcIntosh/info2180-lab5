@@ -62,7 +62,6 @@ $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </table>
         <?php else: ?>
             <h2>Country Information for <?= $country ?></h2>
-            <!-- Display country information here -->
             <table>
             <thead>
                 <tr>
