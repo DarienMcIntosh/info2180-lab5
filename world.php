@@ -16,9 +16,12 @@ if ($lookupType === 'cities') {
     $stmt = $conn->prepare("SELECT cities.name AS cityName, cities.district, cities.population
                            FROM cities
                            JOIN countries ON cities.country_code = countries.code
-                           WHERE countries.name LIKE :country");
+                           WHERE countries.name LIKE :country ESCAPE '%'");
+} else if ($lookupType === 'capitals') {
+    // Add query for capitals lookup (replace with your desired columns)
+    $stmt = $conn->prepare("SELECT * FROM countries WHERE capital LIKE :country ESCAPE '%'");
 } else {
-    $stmt = $conn->prepare("SELECT * FROM countries WHERE name LIKE :country");
+    $stmt = $conn->prepare("SELECT * FROM countries WHERE name LIKE :country ESCAPE '%'");
 }
 
 $stmt->bindParam(':country', $country, PDO::PARAM_STR);
@@ -60,6 +63,20 @@ $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <?php endforeach; ?>
                 </tbody>
             </table>
+        <?php elseif ($lookupType === 'capitals'): ?>
+            <h2>Capitals Information for <?= $country ?></h2>
+            <table>
+                <thead>
+                    <tr>
+                        </tr>
+                </thead>
+                <tbody>
+          <?php foreach ($results as $row): ?>
+            <tr>
+              </tr>
+          <?php endforeach; ?>
+        </tbody>
+      </table>
         <?php else: ?>
             <h2>Country Information for <?= $country ?></h2>
             <table>

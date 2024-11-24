@@ -3,35 +3,32 @@ document.addEventListener("DOMContentLoaded", function () {
     const lookupCitiesButton = document.getElementById("lookupCities");
     const resultContainer = document.getElementById("result");
 
-    lookupButton.addEventListener("click", function () {
-        fetchData("countries");
+    lookupButton.addEventListener("click", async function () {
+        await fetchData("countries");
     });
 
-    lookupCitiesButton.addEventListener("click", function () {
-        fetchData("cities");
+    lookupCitiesButton.addEventListener("click", async function () {
+        await fetchData("cities");
     });
 
-    function fetchData(lookupType) {
+    async function fetchData(lookupType) {
         const countryInput = document.getElementById("country");
         const countryName = countryInput.value.trim();
 
-        const xhr = new XMLHttpRequest();
-        xhr.open("GET", `http://localhost/info2180-lab5/world.php?country=${encodeURIComponent(countryName)}&lookup=${lookupType}`, true);
+        const url = `http://localhost/info2180-lab5/world.php?country=${encodeURIComponent(countryName)}&lookup=${lookupType}`;
 
-        xhr.onload = function () {
-            if (xhr.status >= 200 && xhr.status < 400) {
-                resultContainer.innerHTML = xhr.responseText;
-            } else {
-                resultContainer.innerHTML = "<p>Error retrieving data.</p>";
-            }
-        };
-
-        xhr.onerror = function () {
-            resultContainer.innerHTML = "<p>Network error occurred.</p>";
-        };
-
-        xhr.send();
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`);
+      }
+      const data = await response.text();
+      resultContainer.innerHTML = data;
+    } catch (error) {
+      console.error("Error:", error);
+      resultContainer.innerHTML = "<p>Error retrieving data.</p>";
     }
+  }
 });
 
 
