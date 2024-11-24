@@ -1,7 +1,7 @@
 <?php
 $host = 'localhost';
-$username = 'lab5_user'; 
-$password = 'password123'; 
+$username = 'lab5_user';
+$password = 'password123';
 $dbname = 'world';
 
 // Retrieve the country and lookup type from the GET request
@@ -13,17 +13,15 @@ $conn = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $p
 
 // Prepare and execute the SQL query based on the lookup type
 if ($lookupType === 'cities') {
-    $stmt = $conn->prepare("SELECT cities.name AS cityName, cities.district, cities.population
-                           FROM cities
-                           JOIN countries ON cities.country_code = countries.code
-                           WHERE countries.name LIKE :country ESCAPE '%'");
-} else if ($lookupType === 'capitals') {
-    // Add query for capitals lookup (replace with your desired columns)
-    $stmt = $conn->prepare("SELECT * FROM countries WHERE capital LIKE :country ESCAPE '%'");
+    $stmt = $conn->prepare("SELECT cities.name AS cityName, cities.district, cities.population 
+                            FROM cities 
+                            JOIN countries ON cities.country_code = countries.code 
+                            WHERE countries.name LIKE :country");
 } else {
-    $stmt = $conn->prepare("SELECT * FROM countries WHERE name LIKE :country ESCAPE '%'");
+    $stmt = $conn->prepare("SELECT * FROM countries WHERE name LIKE :country");
 }
 
+$country = "%$country%";  
 $stmt->bindParam(':country', $country, PDO::PARAM_STR);
 $stmt->execute();
 
@@ -39,12 +37,10 @@ $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <link rel="stylesheet" href="world.css">
 </head>
 <body>
-
     <h1>World Database Lookup</h1>
-
     <?php if (!empty($results)): ?>
         <?php if ($lookupType === 'cities'): ?>
-            <h2>Cities in <?= $country ?></h2>
+            <h2>Cities in <?= htmlspecialchars($_GET['country']) ?></h2>
             <table>
                 <thead>
                     <tr>
@@ -56,53 +52,38 @@ $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <tbody>
                     <?php foreach ($results as $row): ?>
                         <tr>
-                            <td><?= $row['cityName']; ?></td>
-                            <td><?= $row['district']; ?></td>
-                            <td><?= $row['population']; ?></td>
+                            <td><?= htmlspecialchars($row['cityName']); ?></td>
+                            <td><?= htmlspecialchars($row['district']); ?></td>
+                            <td><?= htmlspecialchars($row['population']); ?></td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
             </table>
-        <?php elseif ($lookupType === 'capitals'): ?>
-            <h2>Capitals Information for <?= $country ?></h2>
+        <?php else: ?>
+            <h2>Country Information for <?= htmlspecialchars($_GET['country']) ?></h2>
             <table>
                 <thead>
                     <tr>
-                        </tr>
+                        <th>Country Name</th>
+                        <th>Continent</th>
+                        <th>Independence Year</th>
+                        <th>Head of State</th>
+                    </tr>
                 </thead>
                 <tbody>
-          <?php foreach ($results as $row): ?>
-            <tr>
-              </tr>
-          <?php endforeach; ?>
-        </tbody>
-      </table>
-        <?php else: ?>
-            <h2>Country Information for <?= $country ?></h2>
-            <table>
-            <thead>
-                <tr>
-                    <th>Country Name</th>
-                    <th>Continent</th>
-                    <th>Independence Year</th>
-                    <th>Head of State</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($results as $row): ?>
-                    <tr>
-                        <td><?= $row['name']; ?></td>
-                        <td><?= $row['continent']; ?></td>
-                        <td><?= $row['independence_year']; ?></td>
-                        <td><?= $row['head_of_state']; ?></td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+                    <?php foreach ($results as $row): ?>
+                        <tr>
+                            <td><?= htmlspecialchars($row['name']); ?></td>
+                            <td><?= htmlspecialchars($row['continent']); ?></td>
+                            <td><?= htmlspecialchars($row['independence_year']); ?></td>
+                            <td><?= htmlspecialchars($row['head_of_state']); ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
         <?php endif; ?>
     <?php else: ?>
         <p>No information available for the specified country.</p>
     <?php endif; ?>
-
 </body>
 </html>
